@@ -1,0 +1,9 @@
+services:
+  node:
+    image: node
+    volumes:
+      - ./:/lerety
+    working_dir: /lerety
+    command: yarn start
+    ports:
+      - 3000:3000
