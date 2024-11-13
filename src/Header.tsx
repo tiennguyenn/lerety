@@ -8,6 +8,7 @@ import {
   authorizedAction,
 } from "./store/userSlice";
 import { authorize } from "./api/authorize";
+import { NavLink } from "react-router-dom";
 
 function Header() {
   const user = useSelector((state: RootType) => state.user.user);
@@ -37,6 +38,10 @@ function Header() {
           Login
         </button>
       )}
+      <nav>
+        <NavLink to="/">Home</NavLink>
+        <NavLink to="products">Products</NavLink>
+      </nav>
     </>
   );
 }

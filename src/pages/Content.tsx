@@ -1,5 +1,5 @@
 import { useSelector } from "react-redux";
-import { RootType } from "./store";
+import { RootType } from "../store";
 
 function Content() {
   const permissions = useSelector((state: RootType) => state.user.permissions);
