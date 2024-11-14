@@ -1,20 +1,29 @@
-import { useState } from "react";
-import { Product, products } from "../db";
+import { Link, useSearchParams } from "react-router-dom";
+import { products } from "../db";
 
 function ProductsPage() {
-  const [list, setList] = useState(products);
+  const [searchParams] = useSearchParams();
+  const search = searchParams.get("search");
+
+  const filterProducts = () => {
+    if (search) {
+      return products.filter(
+        (prod) => prod.name.toLowerCase().indexOf(search.toLowerCase()) > -1
+      );
+    }
+
+    return products;
+  };
+
   return (
     <>
       <h2>Products</h2>
-      <form>
-        <input name="search" placeholder="Search" />
-      </form>
       <ul>
-        {list.map((product) => (
-          <li>
-            <p>{product.name}</p>
-            <p>{product.description}</p>
-            <p>{product.price}</p>
+        {filterProducts().map((product) => (
+          <li key={product.id}>
+            <p>
+              <Link to={`/products/${product.id}`}>{product.name}</Link>
+            </p>
           </li>
         ))}
       </ul>

@@ -1,4 +1,6 @@
+import { FormEvent } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { NavLink, useNavigate, useSearchParams } from "react-router-dom";
 import { RootType } from "./store";
 import { authenticate } from "./api/authenticate";
 import {
@@ -8,11 +10,12 @@ import {
   authorizedAction,
 } from "./store/userSlice";
 import { authorize } from "./api/authorize";
-import { NavLink } from "react-router-dom";
 
 function Header() {
   const user = useSelector((state: RootType) => state.user.user);
   const loading = useSelector((state: RootType) => state.user.loading);
+  const navigate = useNavigate();
+  const [_, setSearchParams] = useSearchParams();
 
   const dispatch = useDispatch();
 
@@ -26,6 +29,14 @@ function Header() {
       const permissions = await authorize(authUser.id);
       dispatch(authorizedAction(permissions));
     }
+  };
+
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const formData = new FormData(event.currentTarget);
+    const search = formData.get("search") as string;
+    setSearchParams({ search });
+    navigate(`products/?search=${search}`);
   };
 
   return (
@@ -42,6 +53,9 @@ function Header() {
         <NavLink to="/">Home</NavLink>
         <NavLink to="products">Products</NavLink>
       </nav>
+      <form onSubmit={handleSubmit}>
+        <input name="search" placeholder="Search" />
+      </form>
     </>
   );
 }
