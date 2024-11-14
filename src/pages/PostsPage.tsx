@@ -1,48 +1,36 @@
-import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { useForm } from "react-hook-form";
-import { getPosts, NewPost, Post, savePost } from "../api/posts";
+import { getPosts, Post, savePost } from "../api/posts";
 import NewPostPage from "./NewPostPage";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 function PostsPage() {
-  const [posts, setPosts] = useState<Post[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const { reset } = useForm<NewPost>();
+  const queryClient = useQueryClient();
 
-  useEffect(() => {
-    try {
-      setIsLoading(true);
-      getPosts().then((data) => {
-        setIsLoading(false);
-        setPosts(data);
-      });
-    } catch (error) {
-      console.log(error);
-    }
-  }, []);
+  const { isLoading, isFetching, data } = useQuery({
+    queryKey: ["postsData"],
+    queryFn: getPosts,
+  });
 
-  const onSubmit = (newPost: NewPost) => {
-    savePost(newPost)
-      .then((post) => {
-        setPosts([...posts, post]);
-        reset();
-      })
-      .catch(console.log);
-  };
+  const { mutate } = useMutation({
+    mutationFn: savePost,
+    onSuccess: (post) => {
+      queryClient.setQueryData(["postsData"], (old: Post[]) => [...old, post]);
+    },
+  });
 
-  if (isLoading) {
-    return <p>...Loading</p>;
-  }
+  const posts = data as Post[];
 
   return (
     <>
       <h2>Posts</h2>
+      {isLoading && <p>...Loading</p>}
+      {isFetching && <p>...Fetching</p>}
       {posts?.map((post) => (
         <p>
           <Link to={`/post/${post.id}`}>{post.title}</Link>
         </p>
       ))}
-      <NewPostPage onSave={onSubmit} />
+      <NewPostPage onSave={mutate} />
     </>
   );
 }
