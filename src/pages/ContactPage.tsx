@@ -1,10 +1,12 @@
 import { FormEvent } from "react";
+import { FieldError, useForm } from "react-hook-form";
 import {
   ActionFunctionArgs,
   Form,
   redirect,
   useNavigate,
 } from "react-router-dom";
+import ValidationError from "./ValidationError";
 
 type Contact = {
   name: string;
@@ -32,30 +34,54 @@ export async function contactAction({ request }: ActionFunctionArgs) {
 
 function ContactPage() {
   const nagivate = useNavigate();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<Contact>();
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
+  const onValid = (contact: Contact) => {
+    nagivate(`/thank-you/${contact.name}`);
+  };
 
-    const data = new FormData(event.currentTarget);
+  const getError = (fieldError: FieldError | undefined) => {
+    if (!fieldError) {
+      return;
+    }
 
-    nagivate(`/thank-you/${data.get("name")}`);
+    return {
+      border: "3px solid red",
+      paddingTop: "5px",
+    };
   };
 
   return (
     <>
       <h2>Contact</h2>
-      <Form method="post">
+      <form noValidate onSubmit={handleSubmit(onValid)} method="post">
         <div>
           <label>Your name</label>
-          <input name="name" />
+          <input
+            {...register("name", { required: "Name is required" })}
+            style={getError(errors.name)}
+          />
+          <ValidationError fieldError={errors.name} />
         </div>
         <div>
           <label>Your email</label>
-          <input name="email" />
+          <input
+            {...register("email", {
+              pattern: {
+                value: /\S+@\S+\.\S+/,
+                message: "Email is invalid",
+              },
+            })}
+          />
+          <ValidationError fieldError={errors.email} />
         </div>
         <div>
           <label>Reason to contact</label>
-          <select name="reason">
+          <select {...register("reason")}>
             <option value=""></option>
             <option>Support</option>
             <option>Feedback</option>
@@ -64,12 +90,14 @@ function ContactPage() {
         </div>
         <div>
           <label>Notes</label>
-          <textarea name="notes"></textarea>
+          <textarea {...register("notes")}></textarea>
         </div>
         <div>
-          <button type="submit">Submit</button>
+          <button disabled={isSubmitting} type="submit">
+            Submit
+          </button>
         </div>
-      </Form>
+      </form>
     </>
   );
 }
