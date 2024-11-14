@@ -30,10 +30,13 @@ function PostsPage() {
       .catch(console.log);
   };
 
+  if (isLoading) {
+    return <p>...Loading</p>;
+  }
+
   return (
     <>
       <h2>Posts</h2>
-      {isLoading && <p>...Loading</p>}
       {posts?.map((post) => (
         <p>
           <Link to={`/post/${post.id}`}>{post.title}</Link>
