@@ -1,7 +1,7 @@
 import { useSelector } from "react-redux";
 import { RootType } from "../store";
 
-function Content() {
+function AdminPage() {
   const permissions = useSelector((state: RootType) => state.user.permissions);
   return (
     <>
@@ -11,4 +11,4 @@ function Content() {
   );
 }
 
-export default Content;
+export default AdminPage;

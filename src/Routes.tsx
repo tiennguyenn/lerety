@@ -1,9 +1,11 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import App from "./App";
 import ErrorPage from "./pages/ErrorPage";
-import Main from "./pages/Main";
+import HomePage from "./pages/HomePage";
 import ProductsPage from "./pages/ProductsPage";
 import ProductPage from "./pages/ProductPage";
+import ContactPage, { contactAction } from "./pages/ContactPage";
+import ThankYouPage from "./pages/ThankYouPage";
 
 const router = createBrowserRouter([
   {
@@ -13,7 +15,7 @@ const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <Main />,
+        element: <HomePage />,
       },
       {
         path: "/products",
@@ -23,11 +25,20 @@ const router = createBrowserRouter([
         path: "/products/:id",
         element: <ProductPage />,
       },
+      {
+        path: "contact",
+        element: <ContactPage />,
+        action: contactAction,
+      },
+      {
+        path: "thank-you/:name",
+        element: <ThankYouPage />,
+      },
     ],
   },
 ]);
 
-export function Router() {
+export function Routes() {
   return (
     <RouterProvider future={{ v7_startTransition: true }} router={router} />
   );
