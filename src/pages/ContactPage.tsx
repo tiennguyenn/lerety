@@ -38,7 +38,7 @@ function ContactPage() {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
-  } = useForm<Contact>();
+  } = useForm<Contact>({ mode: "onBlur", reValidateMode: "onBlur" });
 
   const onValid = (contact: Contact) => {
     nagivate(`/thank-you/${contact.name}`);
