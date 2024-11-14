@@ -1,0 +1,7 @@
+POST http://localhost:3001/posts
+Content-Type: application/json
+
+{
+  "title": "this is a title for post 6",
+  "description": "this is descripton for post 6"
+}
