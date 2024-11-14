@@ -1,5 +1,10 @@
-import { FormEvent, useState } from "react";
-import { redirect, useNavigate } from "react-router-dom";
+import { FormEvent } from "react";
+import {
+  ActionFunctionArgs,
+  Form,
+  redirect,
+  useNavigate,
+} from "react-router-dom";
 
 type Contact = {
   name: string;
@@ -15,12 +20,17 @@ const initialState: Contact = {
   notes: "",
 };
 
-export function contactAction() {
-  return redirect(`/thank-you/bob`);
+export async function contactAction({ request }: ActionFunctionArgs) {
+  const data = await request.formData();
+
+  const contact = {
+    name: data.get("name"),
+  } as Contact;
+
+  return redirect(`/thank-you/${contact.name}`);
 }
 
 function ContactPage() {
-  const [contact, setContact] = useState<Contact>(initialState);
   const nagivate = useNavigate();
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
@@ -34,18 +44,14 @@ function ContactPage() {
   return (
     <>
       <h2>Contact</h2>
-      <form onSubmit={handleSubmit}>
+      <Form method="post">
         <div>
           <label>Your name</label>
-          <input
-            name="name"
-            onChange={(e) => setContact({ ...contact, name: e.target.value })}
-            value={contact.name}
-          />
+          <input name="name" />
         </div>
         <div>
           <label>Your email</label>
-          <input onChange={(e) => e.target.value} name="email" />
+          <input name="email" />
         </div>
         <div>
           <label>Reason to contact</label>
@@ -63,7 +69,7 @@ function ContactPage() {
         <div>
           <button type="submit">Submit</button>
         </div>
-      </form>
+      </Form>
     </>
   );
 }
