@@ -1,5 +1,4 @@
 import { useRouteError } from "react-router-dom";
-import Header from "../Header";
 
 function isError(error: any): error is { statusText: string } {
   return "statusText" in error;

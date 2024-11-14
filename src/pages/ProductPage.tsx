@@ -9,7 +9,7 @@ function ProductPage() {
       return false;
     }
 
-    return prod.id == parseInt(params.id);
+    return prod.id === parseInt(params.id);
   });
 
   return (

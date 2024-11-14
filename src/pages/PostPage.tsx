@@ -7,8 +7,8 @@ function PostPage() {
   const { id } = useParams();
 
   useEffect(() => {
-    getPost(parseInt(id!)).then(setPost).catch(console.log);
-  }, []);
+    getPost(id!).then(setPost).catch(console.log);
+  }, [id]);
 
   return (
     <>

@@ -4,7 +4,7 @@ export type NewPost = {
 };
 
 export type Post = NewPost & {
-  id: number;
+  id: string;
 };
 
 const url = process.env.REACT_APP_API_URL + "/posts";
@@ -16,7 +16,7 @@ export async function getPosts() {
   return body;
 }
 
-export async function getPost(id: number) {
+export async function getPost(id: string) {
   const response = await fetch(url + `/${id}`);
   const post = response.json();
 

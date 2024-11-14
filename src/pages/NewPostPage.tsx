@@ -1,23 +1,17 @@
 import { useForm } from "react-hook-form";
-import { NewPost, savePost } from "../api/posts";
-import { useDispatch } from "react-redux";
+import { NewPost } from "../api/posts";
 
-function NewPostPage() {
+type Props = {
+  onSave: (newPost: NewPost) => void;
+};
+
+function NewPostPage({ onSave }: Props) {
   const { register, handleSubmit } = useForm<NewPost>();
-  const dispatch = useDispatch();
-
-  const onSubmit = async (newPost: NewPost) => {
-    try {
-      await savePost(newPost);
-    } catch (error) {
-      console.log(error);
-    }
-  };
 
   return (
     <>
       <h3>New post</h3>
-      <form onSubmit={handleSubmit(onSubmit)}>
+      <form onSubmit={handleSubmit(onSave)}>
         <input
           placeholder="Title"
           {...register("title", { required: "Title is required" })}
@@ -28,3 +22,5 @@ function NewPostPage() {
     </>
   );
 }
+
+export default NewPostPage;

@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
-import { getPosts, NewPost, Post, savePost } from "../api/posts";
 import { Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
+import { getPosts, NewPost, Post, savePost } from "../api/posts";
+import NewPostPage from "./NewPostPage";
 
 function PostsPage() {
   const [posts, setPosts] = useState<Post[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const { register, handleSubmit, reset } = useForm<NewPost>();
+  const { reset } = useForm<NewPost>();
 
   useEffect(() => {
     try {
@@ -38,16 +39,7 @@ function PostsPage() {
           <Link to={`/post/${post.id}`}>{post.title}</Link>
         </p>
       ))}
-
-      <h3>New post</h3>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <input
-          placeholder="Title"
-          {...register("title", { required: "Title is required" })}
-        />
-        <textarea placeholder="Description" {...register("description")} />
-        <button type="submit">Save</button>
-      </form>
+      <NewPostPage onSave={onSubmit} />
     </>
   );
 }

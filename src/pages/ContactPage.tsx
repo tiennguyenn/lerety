@@ -1,8 +1,6 @@
-import { FormEvent } from "react";
 import { FieldError, useForm } from "react-hook-form";
 import {
   ActionFunctionArgs,
-  Form,
   redirect,
   useNavigate,
 } from "react-router-dom";
@@ -13,13 +11,6 @@ type Contact = {
   email: string;
   reason: string;
   notes: string;
-};
-
-const initialState: Contact = {
-  name: "",
-  email: "",
-  reason: "",
-  notes: "",
 };
 
 export async function contactAction({ request }: ActionFunctionArgs) {
