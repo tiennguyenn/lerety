@@ -1,14 +1,14 @@
 import { useDispatch, useSelector } from "react-redux";
 import { Form, NavLink } from "react-router-dom";
-import { RootType } from "./store";
-import { authenticate } from "./api/authenticate";
+import { RootType } from "../store";
+import { authenticate } from "../api/authenticate";
 import {
   authenticateAction,
   authenticatedAction,
   authorizeAction,
   authorizedAction,
-} from "./store/userSlice";
-import { authorize } from "./api/authorize";
+} from "../store/userSlice";
+import { authorize } from "../api/authorize";
 
 function Header() {
   const user = useSelector((state: RootType) => state.user.user);
@@ -43,6 +43,7 @@ function Header() {
         <NavLink to="products">Products</NavLink>
         <NavLink to="posts">Posts</NavLink>
         <NavLink to="contact">Contact</NavLink>
+        <NavLink to="github">GitHub</NavLink>
       </nav>
       <Form action="products">
         <input name="search" placeholder="Search" />
