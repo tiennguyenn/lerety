@@ -1,4 +1,9 @@
-import { GetViewerResponse } from "./types";
+import {
+  AddStarReponse,
+  GetRepoResponse,
+  GetViewerResponse,
+  SearchFormData,
+} from "./types";
 
 const url = process.env.REACT_APP_GITHUB_API_URL!;
 
@@ -28,19 +33,6 @@ export async function getViewer() {
   return body;
 }
 
-const repoQuery = `
-  query($owner: String!, $name: String!) {
-    repository(owner: $owner, name: $name) {
-      id
-      name
-      description
-      stargazers {
-        totalCount
-      }
-    }
-  }
-`;
-
 function assertIsGetViewerResponse(
   body: any
 ): asserts body is GetViewerResponse {
@@ -53,4 +45,61 @@ function assertIsGetViewerResponse(
   if (!("viewer" in body.data)) {
     throw error;
   }
+}
+
+const repoQuery = `
+  query($owner: String!, $name: String!) {
+    repository(owner: $owner, name: $name) {
+      id
+      name
+      description
+      viewerHasStarred
+      stargazers {
+        totalCount
+      }
+    }
+  }
+`;
+
+export async function getRepo(owner: string, name: string) {
+  const response = await fetch(url, {
+    body: JSON.stringify({ query: repoQuery, variables: { owner, name } }),
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  const body = (await response.json()) as GetRepoResponse;
+  return body;
+}
+
+const starQuery = `
+  mutation($repoId: ID!) {
+    addStar({input: {starableId: $repoId}}) {
+      starable: {
+        stargezers: {
+          totalCount
+        }
+      }
+    }
+  }
+`;
+
+export async function addStar(repoId: string) {
+  const response = await fetch(url, {
+    method: "POST",
+    body: JSON.stringify({
+      query: starQuery,
+      variables: { repoId },
+    }),
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  const body = await response.json();
+  console.log(body);
+  return body;
 }
