@@ -29,7 +29,3 @@ export type GetRepoResponse = {
     repository: RepoType;
   };
 };
-
-export type AddStarReponse = {
-  data: {};
-};

@@ -1,9 +1,4 @@
-import {
-  AddStarReponse,
-  GetRepoResponse,
-  GetViewerResponse,
-  SearchFormData,
-} from "./types";
+import { GetRepoResponse, GetViewerResponse, SearchFormData } from "./types";
 
 const url = process.env.REACT_APP_GITHUB_API_URL!;
 
@@ -61,9 +56,12 @@ const repoQuery = `
   }
 `;
 
-export async function getRepo(owner: string, name: string) {
+export async function getRepo(searchCriteria: SearchFormData) {
   const response = await fetch(url, {
-    body: JSON.stringify({ query: repoQuery, variables: { owner, name } }),
+    body: JSON.stringify({
+      query: repoQuery,
+      variables: { owner: searchCriteria.owner, name: searchCriteria.name },
+    }),
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -77,8 +75,8 @@ export async function getRepo(owner: string, name: string) {
 
 const starQuery = `
   mutation($repoId: ID!) {
-    addStar({input: {starableId: $repoId}}) {
-      starable: {
+    addStar(input: {starrableId: $repoId}) {
+      starrable: {
         stargezers: {
           totalCount
         }
@@ -100,6 +98,5 @@ export async function addStar(repoId: string) {
     },
   });
   const body = await response.json();
-  console.log(body);
   return body;
 }
