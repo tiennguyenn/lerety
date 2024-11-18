@@ -1,50 +1,47 @@
 import { useForm } from "react-hook-form";
-import { GetRepoResponse, RepoType, SearchFormData } from "./types";
-import { addStar, getRepo } from "./services";
-import { useState } from "react";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { GetRepoResponse, SearchFormData } from "./types";
+import { gql, useLazyQuery, useMutation } from "@apollo/client";
+
+const query = gql`
+  query ($owner: String!, $name: String!) {
+    repository(owner: $owner, name: $name) {
+      id
+      name
+      description
+      viewerHasStarred
+      stargazers {
+        totalCount
+      }
+    }
+  }
+`;
+
+const mutation = gql`
+  mutation ($repoId: ID!) {
+    addStar(input: { starrableId: $repoId }) {
+      starrable {
+        stargazers {
+          totalCount
+        }
+      }
+    }
+  }
+`;
 
 function GitHubSearch() {
   const { register, handleSubmit } = useForm<SearchFormData>();
-  const [searchCriteria, setSearchCriteria] = useState<SearchFormData>();
 
-  const { data } = useQuery({
-    enabled: searchCriteria !== undefined,
-    queryKey: ["repo", searchCriteria],
-    queryFn: () => getRepo(searchCriteria as SearchFormData),
-  });
+  const [getRepo, { data, loading }] = useLazyQuery<GetRepoResponse>(query);
 
-  const { mutate } = useMutation({
-    mutationFn: addStar,
-    onSuccess() {
-      queryClient.setQueryData<GetRepoResponse>(
-        ["repo", searchCriteria],
-        (old) => {
-          if (!old) {
-            return undefined;
-          }
-
-          return {
-            data: {
-              repository: { ...old.data.repository, viewerHasStarred: true },
-            },
-          };
-        }
-      );
-    },
-  });
-
-  const queryClient = useQueryClient();
+  const [starRepo] = useMutation(mutation);
 
   const onSubmit = (search: SearchFormData) => {
-    setSearchCriteria(search);
+    getRepo({ variables: { ...search } });
   };
 
-  const repository = data?.data.repository;
-
-  const onClickStar = () => {
-    if (repository) {
-      mutate(repository.id);
+  const onClickStar = (repoId: string) => {
+    if (repoId) {
+      starRepo({ variables: { repoId } });
     }
   };
 
@@ -65,13 +62,17 @@ function GitHubSearch() {
         </div>
       </form>
 
-      {repository && (
+      {loading && <div>...Loading</div>}
+
+      {data && (
         <div>
-          <p>Name: {repository.name}</p>
-          <p>Description: {repository.description}</p>
-          <p>Stars: {repository.stargazers.totalCount}</p>
-          {!repository.viewerHasStarred && (
-            <button onClick={onClickStar}>Star</button>
+          <p>Name: {data.repository.name}</p>
+          <p>Description: {data.repository.description}</p>
+          <p>Stars: {data.repository.stargazers.totalCount}</p>
+          {!data.repository.viewerHasStarred && (
+            <button onClick={() => onClickStar(data.repository.id)}>
+              Star
+            </button>
           )}
         </div>
       )}

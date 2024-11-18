@@ -4,9 +4,7 @@ export type ViewerData = {
 };
 
 export type GetViewerResponse = {
-  data: {
-    viewer: ViewerData;
-  };
+  viewer: ViewerData;
 };
 
 export type SearchFormData = {
@@ -25,7 +23,5 @@ export type RepoType = {
 };
 
 export type GetRepoResponse = {
-  data: {
-    repository: RepoType;
-  };
+  repository: RepoType;
 };

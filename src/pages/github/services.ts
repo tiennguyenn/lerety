@@ -76,8 +76,8 @@ export async function getRepo(searchCriteria: SearchFormData) {
 const starQuery = `
   mutation($repoId: ID!) {
     addStar(input: {starrableId: $repoId}) {
-      starrable: {
-        stargezers: {
+      starrable {
+        stargazers {
           totalCount
         }
       }
